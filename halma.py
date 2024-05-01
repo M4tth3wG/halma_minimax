@@ -37,12 +37,10 @@ class Halma:
     def get_normal_moves(self, coordinates):
         x, y = coordinates
         moves = []
-        length = len(self.board[0])
-        height = len(self.board)
 
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if x + i >= 0 and y + j >= 0 and x + i < length and y + j < height \
+                if x + i >= 0 and y + j >= 0 and x + i < BOARD_SIZE and y + j < BOARD_SIZE \
                     and self.board[x + i][y + j] == FieldType.EMPTY:
                     move = ((x, y), (x + i, y + j))
                     moves.append(move)
@@ -55,13 +53,11 @@ class Halma:
 
         for i in range(-1, 2):
             for j in range(-1, 2):
-                length = len(self.board[0])
-                height = len(self.board)
 
-                if x + i >= 0 and y + j >=0 and x + i < length and y + j < height \
+                if x + i >= 0 and y + j >=0 and x + i < BOARD_SIZE and y + j < BOARD_SIZE \
                     and self.board[x + i][y + j] != FieldType.EMPTY:
 
-                    if x + 2 * i >= 0 and y + 2 * j >= 0 and x + 2 * i < length and y + 2 * j < height \
+                    if x + 2 * i >= 0 and y + 2 * j >= 0 and x + 2 * i < BOARD_SIZE and y + 2 * j < BOARD_SIZE \
                         and self.board[x + 2 * i][y + 2 * j] == FieldType.EMPTY:
                             field = ((x + 2 * i, y + 2 * j))
                             fields.append(field)
@@ -94,12 +90,6 @@ class Halma:
                     possible_moves.extend(jump_moves)
 
         return possible_moves
-
-    def print_board(self):
-        for row in self.board:
-            for field in row:
-                print(field.value, end=" ")
-            print()
 
     def check_winning_condition(self):
         for i in range(START_AREA_SIZE):
@@ -151,19 +141,3 @@ class Halma:
             self.current_player = FieldType.PLAYER_WHITE
 
         self.possible_moves = self.get_possible_moves(self.current_player)
-        
-
-def main():
-    halma = Halma()
-    halma.print_board()
-    print(halma.possible_moves)
-    print(halma.perform_move(((0, 2), (2, 4))))
-    halma.print_board()
-    print(halma.round)
-    print(halma.possible_moves)
-    
-
-
-if __name__ == '__main__':
-    main()
-
