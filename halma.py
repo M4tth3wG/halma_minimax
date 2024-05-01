@@ -41,7 +41,7 @@ class Halma:
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if x + i >= 0 and y + j >= 0 and x + i < BOARD_SIZE and y + j < BOARD_SIZE \
-                    and self.board[x + i][y + j] == FieldType.EMPTY:
+                    and self.board[y + j][x + i] == FieldType.EMPTY:
                     move = ((x, y), (x + i, y + j))
                     moves.append(move)
         
@@ -55,10 +55,10 @@ class Halma:
             for j in range(-1, 2):
 
                 if x + i >= 0 and y + j >=0 and x + i < BOARD_SIZE and y + j < BOARD_SIZE \
-                    and self.board[x + i][y + j] != FieldType.EMPTY:
+                    and self.board[y + j][x + i] != FieldType.EMPTY:
 
                     if x + 2 * i >= 0 and y + 2 * j >= 0 and x + 2 * i < BOARD_SIZE and y + 2 * j < BOARD_SIZE \
-                        and self.board[x + 2 * i][y + 2 * j] == FieldType.EMPTY:
+                        and self.board[y + 2 * j][x + 2 * i] == FieldType.EMPTY:
                             field = ((x + 2 * i, y + 2 * j))
                             fields.append(field)
         
@@ -79,10 +79,10 @@ class Halma:
     def get_possible_moves(self, player):
         possible_moves = []
 
-        for x in range(len(self.board[0])):
-            for y in range(len(self.board)):
+        for y in range(BOARD_SIZE):
+            for x in range(BOARD_SIZE):
                 
-                if self.board[x][y] == player:
+                if self.board[y][x] == player:
                     normal_moves = self.get_normal_moves((x, y))
                     jump_moves = self.get_jump_moves((x, y))
 
@@ -100,7 +100,7 @@ class Halma:
                 x = 0
                 y = i
             
-            if self.board[x][y] != self.current_player:
+            if self.board[y][x] != self.current_player:
                 return False
 
         for i in range(1, START_AREA_SIZE):
@@ -112,7 +112,7 @@ class Halma:
                     x = i
                     y = j
 
-                if self.board[x][y] != self.current_player:
+                if self.board[y][x] != self.current_player:
                     return False
         return True
 
@@ -125,8 +125,8 @@ class Halma:
 
         (start_x, start_y), (goal_x, goal_y) = move
 
-        self.board[start_x][start_y] = FieldType.EMPTY
-        self.board[goal_x][goal_y] = self.current_player
+        self.board[start_y][start_x] = FieldType.EMPTY
+        self.board[goal_y][goal_x] = self.current_player
         
         if self.check_winning_condition():
             self.finished = True
