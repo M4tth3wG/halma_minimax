@@ -1,16 +1,17 @@
 from enum import Enum
 from collections import deque
 
-BOARD_SIZE = 16
-NUMBER_OF_PAWNS = 19
-START_AREA_SIZE = 5
-
 class FieldType(Enum):
     EMPTY = 0
     PLAYER_WHITE = 1
     PLAYER_BLACK = 2
 
-class Game:
+BOARD_SIZE = 16
+NUMBER_OF_PAWNS = 19
+START_AREA_SIZE = 5
+STARTING_PLAYER = FieldType.PLAYER_WHITE
+
+class Halma:
     def create_init_board():    
         board = [[FieldType.EMPTY for j in range(BOARD_SIZE)] for i in range(BOARD_SIZE)]
 
@@ -26,7 +27,12 @@ class Game:
         return board
     
     def __init__(self, board=create_init_board()) -> None:
+        self.finished = False
+        self.winner = None
+        self.current_player = STARTING_PLAYER
+        self.round = 1
         self.board = board
+        self.possible_moves = self.get_possible_moves(self.current_player)
 
     def get_normal_moves(self, coordinates):
         x, y = coordinates
@@ -95,6 +101,69 @@ class Game:
                 print(field.value, end=" ")
             print()
 
-game = Game()
-game.print_board()
-print(len(game.get_possible_moves(FieldType.PLAYER_BLACK)))
+    def check_winning_condition(self):
+        for i in range(START_AREA_SIZE):
+            if self.current_player == FieldType.PLAYER_WHITE:
+                x = -1
+                y = -i - 1
+            else:
+                x = 0
+                y = i
+            
+            if self.board[x][y] != self.current_player:
+                return False
+
+        for i in range(1, START_AREA_SIZE):
+            for j in range(START_AREA_SIZE - i + 1):
+                if self.current_player == FieldType.PLAYER_WHITE:
+                    x = -i - 1
+                    y = -j - 1
+                else:
+                    x = i
+                    y = j
+
+                if self.board[x][y] != self.current_player:
+                    return False
+        return True
+
+    def perform_move(self, move):
+        if self.finished:
+            raise Exception("Game is finished!")
+
+        if move not in self.possible_moves:
+            raise ValueError("Move not allowed!")
+
+        (start_x, start_y), (goal_x, goal_y) = move
+
+        self.board[start_x][start_y] = FieldType.EMPTY
+        self.board[goal_x][goal_y] = self.current_player
+        
+        if self.check_winning_condition():
+            self.finished = True
+            self.winner = self.current_player
+            return
+
+        self.round = self.round + 1
+
+        if self.current_player == FieldType.PLAYER_WHITE:
+            self.current_player = FieldType.PLAYER_BLACK
+        else:
+            self.current_player = FieldType.PLAYER_WHITE
+
+        self.possible_moves = self.get_possible_moves(self.current_player)
+        
+
+def main():
+    halma = Halma()
+    halma.print_board()
+    print(halma.possible_moves)
+    print(halma.perform_move(((0, 2), (2, 4))))
+    halma.print_board()
+    print(halma.round)
+    print(halma.possible_moves)
+    
+
+
+if __name__ == '__main__':
+    main()
+
