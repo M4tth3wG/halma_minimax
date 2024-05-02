@@ -1,0 +1,2 @@
+from .random_strategy import RandomStrategy
+from .best_current_move_strategy import BestCurrentMoveStrategy
