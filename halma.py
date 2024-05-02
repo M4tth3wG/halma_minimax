@@ -38,6 +38,16 @@ def calculate_camp_coordinates(player):
 
     return coordinates
 
+def calculate_player_fields(board, player):
+    coordinates = []
+    
+    for x in range(BOARD_SIZE):
+        for y in range(BOARD_SIZE):
+            if board[y][x] == player:
+                coordinates.append((x, y))
+
+    return coordinates
+
 def calculate_normal_moves(board, coordinates):
         x, y = coordinates
         moves = []
