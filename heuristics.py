@@ -62,6 +62,35 @@ def calculate_distance_to_camp(field_coordinates, camp_coordinates, distance_fun
 
 #     return player_white_sum + player_black_sum
 
+# def manhattan_state_heuristic(board, maximizing_player):
+#     player_white_fields = halma.calculate_player_fields(board, FieldType.PLAYER_WHITE)
+#     player_black_fields = halma.calculate_player_fields(board, FieldType.PLAYER_BLACK)
+
+#     player_white_free_end_zone_fields = list(set(PLAYER_WHITE_WINNING_COORDINATES) - set(player_white_fields))
+#     player_black_free_end_zone_fields = list(set(PLAYER_BLACK_WINNING_COORDINATES) - set(player_black_fields))
+
+#     player_white_sum = 0
+#     player_black_sum = 0
+
+#     for field in player_white_fields:
+#         player_white_sum = player_white_sum + 2 * (halma.BOARD_SIZE - 1)
+        
+#         if field not in PLAYER_WHITE_WINNING_COORDINATES:
+#             player_white_sum = player_white_sum - calculate_distance_to_camp(field, player_white_free_end_zone_fields, manhattan_distance)
+
+#     for field in player_black_fields:
+#         player_black_sum = player_black_sum + 2 * (halma.BOARD_SIZE - 1)
+        
+#         if field not in PLAYER_BLACK_WINNING_COORDINATES:
+#             player_black_sum = player_black_sum - calculate_distance_to_camp(field, player_black_free_end_zone_fields, manhattan_distance)
+
+#     if maximizing_player == FieldType.PLAYER_WHITE:
+#         player_black_sum = -1 * player_black_sum
+#     else:
+#         player_white_sum = -1 * player_white_sum
+
+#     return player_white_sum + player_black_sum
+
 def manhattan_state_heuristic(board, maximizing_player):
     player_white_fields = halma.calculate_player_fields(board, FieldType.PLAYER_WHITE)
     player_black_fields = halma.calculate_player_fields(board, FieldType.PLAYER_BLACK)
@@ -72,20 +101,21 @@ def manhattan_state_heuristic(board, maximizing_player):
     player_white_sum = 0
     player_black_sum = 0
 
-    # player_white_sum = sum([calculate_distance_to_camp(field, halma.Halma.camp_coordinates[FieldType.PLAYER_WHITE], manhattan_distance) for field in player_white_fields])
-    # player_black_sum = sum([calculate_distance_to_camp(field, halma.Halma.camp_coordinates[FieldType.PLAYER_BLACK], manhattan_distance) for field in player_black_fields])
-    
     for field in player_white_fields:
-        player_white_sum = player_white_sum + 2 * (halma.BOARD_SIZE - 1)
+        player_white_sum = player_white_sum + 4 * (halma.BOARD_SIZE - 1)
         
         if field not in PLAYER_WHITE_WINNING_COORDINATES:
             player_white_sum = player_white_sum - calculate_distance_to_camp(field, player_white_free_end_zone_fields, manhattan_distance)
+        
+        player_white_sum = player_white_sum - manhattan_distance(field, (15,15))
 
     for field in player_black_fields:
-        player_black_sum = player_black_sum + 2 * (halma.BOARD_SIZE - 1)
+        player_black_sum = player_black_sum + 4 * (halma.BOARD_SIZE - 1)
         
         if field not in PLAYER_BLACK_WINNING_COORDINATES:
             player_black_sum = player_black_sum - calculate_distance_to_camp(field, player_black_free_end_zone_fields, manhattan_distance)
+
+        player_black_sum = player_black_sum - manhattan_distance(field, (0,0))
 
     if maximizing_player == FieldType.PLAYER_WHITE:
         player_black_sum = -1 * player_black_sum
