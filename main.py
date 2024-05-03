@@ -59,8 +59,8 @@ def run(game):
     print('%' * separator_length)
 
 def main():
-    player_white_strategy = strategies.BestCurrentMoveStrategy(heuristics.manhattan_end_positon_heuristic)
-    # player_white_strategy = strategies.AlfaBetaStrategy(heuristics.manhattan_state_heuristic)
+    # player_white_strategy = strategies.BestCurrentMoveStrategy(heuristics.manhattan_end_positon_heuristic)
+    player_white_strategy = strategies.AlfaBetaStrategy(heuristics.manhattan_state_heuristic)
     player_black_strategy = strategies.RandomStrategy()
 
     game = Game(player_white_strategy, player_black_strategy)
