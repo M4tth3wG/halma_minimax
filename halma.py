@@ -130,6 +130,11 @@ def lookahead_move(board, move, player):
 
     return board_copy
 
+def get_next_player(current_player):
+    players = Halma.players
+    current_index = players.index(current_player)
+    return players[(current_index + 1) % len(players)]
+
 class Halma:
     players = [FieldType.PLAYER_WHITE, FieldType.PLAYER_BLACK]
     camp_coordinates = {player : calculate_camp_coordinates(player) for player in players}

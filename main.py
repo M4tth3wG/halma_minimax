@@ -63,8 +63,8 @@ def main():
     # player_white_strategy = strategies.BestNextStateStrategy(heuristics.manhattan_state_heuristic)
     # player_white_strategy = strategies.MinimaxStrategy(heuristics.manhattan_state_heuristic, 1)
     # player_white_strategy = strategies.AlphaBetaStrategy(heuristics.manhattan_state_heuristic, 2)
-    player_white_strategy = strategies.BestNextStateStrategy(heuristics.manhattan_state_heuristic)
-    player_black_strategy = strategies.AlphaBetaStrategy(heuristics.manhattan_state_heuristic, 2)
+    player_white_strategy = strategies.BestNextStateStrategy(heuristics.heatmap_heuristic)
+    player_black_strategy = strategies.AlphaBetaStrategy(heuristics.heatmap_heuristic, 2)
 
     game = Game(player_white_strategy, player_black_strategy)
     run(game)
