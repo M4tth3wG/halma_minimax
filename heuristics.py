@@ -3,6 +3,7 @@ import halma
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from itertools import chain
 
 CAMP_EDGES = {
     FieldType.PLAYER_WHITE : [(halma.START_AREA_SIZE + 1 - y, y) for y in range(1, halma.START_AREA_SIZE + 1)],
@@ -89,7 +90,7 @@ def calculate_distance_to_camp(field_coordinates, camp_coordinates, distance_fun
 
 def distance_state_heuristic(board, maximizing_player, distance_function):
     player_fields = {player : halma.calculate_player_fields(board, player) for player in halma.Halma.players}
-    free_end_zone_fields = {player : list(set(WINNING_COORDINATES[player]) - set(player_fields[player])) for player in halma.Halma.players} # change
+    free_end_zone_fields = {player : list(set(WINNING_COORDINATES[player]) - set(player_fields[player])) for player in halma.Halma.players}
     heuristic_value = {player : 0 for player in halma.Halma.players}
     player_goal_corner = {
         FieldType.PLAYER_WHITE : (15, 15),
@@ -98,7 +99,7 @@ def distance_state_heuristic(board, maximizing_player, distance_function):
 
     for player in halma.Halma.players:
         for field in player_fields[player]:
-            heuristic_value[player] = heuristic_value[player] + 4 * (halma.BOARD_SIZE - 1) # 2 * distance_function(player_goal_corner[player], player_goal_corner[halma.get_next_player(player)])
+            heuristic_value[player] = heuristic_value[player] + 2 * distance_function(player_goal_corner[player], player_goal_corner[halma.get_next_player(player)])
             
             if field not in WINNING_COORDINATES[player]:
                 heuristic_value[player] = heuristic_value[player] - calculate_distance_to_camp(field, free_end_zone_fields[player], distance_function)
@@ -118,6 +119,17 @@ def euclides_state_heuristic(board, maximizing_player):
 
 def manhattan_euclides_state_heuristic(board, maximizing_player):
     return distance_state_heuristic(board, maximizing_player, lambda a, b : combined_distance(a, b, manhattan_distance, euclides_distance))
+
+def adaptive_heatmap_heuristic(board, maximizing_player):
+    end_zone_threshold = 3
+    player_fields = {player : halma.calculate_player_fields(board, player) for player in halma.Halma.players}
+    heatmap = HEATMAPS[maximizing_player]
+    free_end_zone_fields = {player : list(set(WINNING_COORDINATES[player]) - set(player_fields[player])) for player in halma.Halma.players}
+
+    if len(free_end_zone_fields[maximizing_player]) <= end_zone_threshold:
+        return manhattan_state_heuristic(board, maximizing_player)
+    else:
+        return sum([heatmap[y][x] for x, y in list(chain.from_iterable(player_fields.values()))])
 
 def heatmap_heuristic(board, maximizing_player):
     heatmap = HEATMAPS[maximizing_player]
