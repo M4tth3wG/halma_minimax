@@ -2,6 +2,7 @@ from halma import FieldType
 import halma
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 def winning_coordinates(player):
     coordinates = []
@@ -12,6 +13,12 @@ def winning_coordinates(player):
         coordinates = halma.Halma.camp_coordinates[FieldType.PLAYER_WHITE]
 
     return coordinates
+
+
+CAMP_EDGES = {
+    FieldType.PLAYER_WHITE : [(halma.START_AREA_SIZE + 1 - y, y) for y in range(1, halma.START_AREA_SIZE + 1)],
+    FieldType.PLAYER_BLACK : [(halma.BOARD_SIZE - halma.START_AREA_SIZE + y - 2, halma.BOARD_SIZE - y - 1) for y in range(1, halma.START_AREA_SIZE + 1)]
+}
 
 def create_heatmap(maximizing_player):
     shift = 5
@@ -26,9 +33,18 @@ def create_heatmap(maximizing_player):
 
     for x, y in halma.Halma.camp_coordinates[maximizing_player]:
         heatmap[y][x] = (heatmap[y][x] - shift) * multiplier
+
+    for index, (x, y) in enumerate(CAMP_EDGES[maximizing_player]):
+        heatmap[y][x] = heatmap[y][x] - index * 0.1
     
     for x, y in halma.Halma.camp_coordinates[halma.get_next_player(maximizing_player)]:
         heatmap[y][x] = (heatmap[y][x] + shift) * multiplier
+
+    minimizer_edge = CAMP_EDGES[halma.get_next_player(maximizing_player)].copy()
+    minimizer_edge.reverse()
+
+    for index, (x, y) in enumerate(minimizer_edge):
+        heatmap[y][x] = heatmap[y][x] + index * 0.1
 
     return heatmap
 
@@ -48,6 +64,9 @@ def manhattan_distance(point_a, point_b):
     point_b_x, point_b_y = point_b
 
     return abs(point_a_x - point_b_x) + abs(point_a_y - point_b_y)
+
+def euclides_distance(point_a, point_b):
+    return math.dist(point_a, point_b)
 
 def manhattan_end_positon_heuristic(move, halma_game):
     player = halma_game.current_player
@@ -153,6 +172,39 @@ def manhattan_state_heuristic(board, maximizing_player):
 
     return player_white_sum + player_black_sum
 
+def euclides_state_heuristic(board, maximizing_player):
+    player_white_fields = halma.calculate_player_fields(board, FieldType.PLAYER_WHITE)
+    player_black_fields = halma.calculate_player_fields(board, FieldType.PLAYER_BLACK)
+
+    player_white_free_end_zone_fields = list(set(PLAYER_WHITE_WINNING_COORDINATES) - set(player_white_fields))
+    player_black_free_end_zone_fields = list(set(PLAYER_BLACK_WINNING_COORDINATES) - set(player_black_fields))
+
+    player_white_sum = 0
+    player_black_sum = 0
+
+    for field in player_white_fields:
+        player_white_sum = player_white_sum + 4 * (halma.BOARD_SIZE - 1)
+        
+        if field not in PLAYER_WHITE_WINNING_COORDINATES:
+            player_white_sum = player_white_sum - calculate_distance_to_camp(field, player_white_free_end_zone_fields, euclides_distance)
+        
+        player_white_sum = player_white_sum - euclides_distance(field, (15,15))
+
+    for field in player_black_fields:
+        player_black_sum = player_black_sum + 4 * (halma.BOARD_SIZE - 1)
+        
+        if field not in PLAYER_BLACK_WINNING_COORDINATES:
+            player_black_sum = player_black_sum - calculate_distance_to_camp(field, player_black_free_end_zone_fields, euclides_distance)
+
+        player_black_sum = player_black_sum - euclides_distance(field, (0,0))
+
+    if maximizing_player == FieldType.PLAYER_WHITE:
+        player_black_sum = -1 * player_black_sum
+    else:
+        player_white_sum = -1 * player_white_sum
+
+    return player_white_sum + player_black_sum
+
 def heatmap_heuristic(board, maximizing_player):
     heatmap = HEATMAPS[maximizing_player]
     
@@ -178,10 +230,10 @@ def main():
     # print(halma.check_winning_condition(board, FieldType.PLAYER_BLACK))
     # print(manhattan_state_heuristic(board, FieldType.PLAYER_BLACK))
 
-    print_heatmap(HEATMAPS[FieldType.PLAYER_WHITE])
+    print_heatmap(HEATMAPS[FieldType.PLAYER_BLACK])
     # print_heatmap(HEATMAPS[FieldType.PLAYER_BLACK])
 
-    print(heatmap_heuristic(board, FieldType.PLAYER_BLACK))
+    #print(heatmap_heuristic(board, FieldType.PLAYER_BLACK))
 
 if __name__ == '__main__':
     main()
