@@ -1,0 +1,6 @@
+from .random_strategy import RandomStrategy
+from .best_current_move_strategy import BestCurrentMoveStrategy
+from .best_next_state_strategy import BestNextStateStrategy
+from .alpha_beta_strategy import AlphaBetaStrategy
+from .minimax_strategy import MinimaxStrategy
+from .input_strategy import InputStrategy
