@@ -7529,7 +7529,7 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">game</span> <span class="kn">import</span> <span class="n">Game</span>
-<span class="kn">from</span> <span class="nn">halma</span> <span class="kn">import</span> <span class="n">Halma</span>
+<span class="kn">from</span> <span class="nn">halma</span> <span class="kn">import</span> <span class="n">Halma</span><span class="p">,</span> <span class="n">FieldType</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">strategies</span>
 <span class="kn">import</span> <span class="nn">heuristics</span>
@@ -8570,6 +8570,171 @@ adaptive_heatmap_heuristic DONE!
 <td>340.019869</td>
 <td>1.152869</td>
 <td>1.121406</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="Nodes-visited-comparison">Nodes visited comparison<a class="anchor-link" href="#Nodes-visited-comparison">¶</a></h1>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+
+<span class="k">for</span> <span class="n">heuristic</span> <span class="ow">in</span> <span class="n">heuristics_list</span><span class="p">:</span>
+    <span class="n">player_strategies</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">FieldType</span><span class="o">.</span><span class="n">PLAYER_WHITE</span> <span class="p">:</span> <span class="n">strategies</span><span class="o">.</span><span class="n">MinimaxStrategy</span><span class="p">(</span><span class="n">heuristic</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">FieldType</span><span class="o">.</span><span class="n">PLAYER_BLACK</span> <span class="p">:</span> <span class="n">strategies</span><span class="o">.</span><span class="n">AlphaBetaStrategy</span><span class="p">(</span><span class="n">heuristic</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="n">winner</span><span class="p">,</span> <span class="n">rounds</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">game_time</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">collect_game_data</span><span class="p">(</span><span class="n">player_strategies</span><span class="p">[</span><span class="n">FieldType</span><span class="o">.</span><span class="n">PLAYER_WHITE</span><span class="p">],</span> <span class="n">player_strategies</span><span class="p">[</span><span class="n">FieldType</span><span class="o">.</span><span class="n">PLAYER_BLACK</span><span class="p">],</span> <span class="mi">300</span><span class="p">)</span>
+
+    <span class="n">time_averages</span> <span class="o">=</span> <span class="p">{</span><span class="n">player</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">player</span><span class="p">]))</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">Halma</span><span class="o">.</span><span class="n">players</span><span class="p">}</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">'Winner'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">winner</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">winner</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">'Rounds'</span><span class="p">]</span> <span class="o">=</span> <span class="n">rounds</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">'Game Time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">game_time</span>
+
+    <span class="k">for</span> <span class="n">player</span><span class="p">,</span> <span class="n">avg_time</span> <span class="ow">in</span> <span class="n">time_averages</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_AvgMoveTime'</span><span class="p">]</span> <span class="o">=</span> <span class="n">avg_time</span>
+
+    <span class="k">for</span> <span class="n">player</span><span class="p">,</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">player_strategies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_TotalNodesVisited'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">nodes_visited</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_AvgNodesVisited'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">nodes_visited</span><span class="p">))</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">heuristic</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> Done in </span><span class="si">{</span><span class="n">game_time</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>euclides_state_heuristic Done in 1120.8246309757233s
+manhattan_state_heuristic Done in 904.7901108264923s
+manhattan_euclides_state_heuristic Done in 2139.110768556595s
+heatmap_heuristic Done in 404.4942009449005s
+adaptive_heatmap_heuristic Done in 448.92173647880554s
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>Winner</th>
+<th>Rounds</th>
+<th>Game Time</th>
+<th>PLAYER_WHITE_AvgMoveTime</th>
+<th>PLAYER_BLACK_AvgMoveTime</th>
+<th>PLAYER_WHITE_TotalNodesVisited</th>
+<th>PLAYER_WHITE_AvgNodesVisited</th>
+<th>PLAYER_BLACK_TotalNodesVisited</th>
+<th>PLAYER_BLACK_AvgNodesVisited</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>euclides_state_heuristic</th>
+<td>PLAYER_WHITE</td>
+<td>215.0</td>
+<td>1120.824631</td>
+<td>7.705791</td>
+<td>2.697189</td>
+<td>3250827.0</td>
+<td>30100.250000</td>
+<td>390145.0</td>
+<td>3646.214953</td>
+</tr>
+<tr>
+<th>manhattan_state_heuristic</th>
+<td>None</td>
+<td>300.0</td>
+<td>904.790111</td>
+<td>4.159416</td>
+<td>1.885085</td>
+<td>2825907.0</td>
+<td>18839.380000</td>
+<td>652355.0</td>
+<td>4378.221477</td>
+</tr>
+<tr>
+<th>manhattan_euclides_state_heuristic</th>
+<td>PLAYER_BLACK</td>
+<td>208.0</td>
+<td>2139.110769</td>
+<td>16.744767</td>
+<td>3.823606</td>
+<td>3050499.0</td>
+<td>29331.721154</td>
+<td>384211.0</td>
+<td>3694.336538</td>
+</tr>
+<tr>
+<th>heatmap_heuristic</th>
+<td>None</td>
+<td>300.0</td>
+<td>404.494201</td>
+<td>1.537972</td>
+<td>1.166432</td>
+<td>2427722.0</td>
+<td>16184.813333</td>
+<td>496944.0</td>
+<td>3335.194631</td>
+</tr>
+<tr>
+<th>adaptive_heatmap_heuristic</th>
+<td>None</td>
+<td>300.0</td>
+<td>448.921736</td>
+<td>1.735108</td>
+<td>1.266144</td>
+<td>2497818.0</td>
+<td>16652.120000</td>
+<td>510652.0</td>
+<td>3427.194631</td>
 </tr>
 </tbody>
 </table>
