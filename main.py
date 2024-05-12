@@ -105,14 +105,14 @@ def main():
     # player_white_strategy = strategies.BestNextStateStrategy(heuristics.manhattan_state_heuristic)
     # player_white_strategy = strategies.MinimaxStrategy(heuristics.manhattan_state_heuristic, 1)
     # player_white_strategy = strategies.AlphaBetaStrategy(heuristics.manhattan_state_heuristic, 2)
-    player_white_strategy = strategies.BestNextStateStrategy(heuristics.manhattan_state_heuristic)
-    player_black_strategy = strategies.AlphaBetaStrategy(heuristics.heatmap_heuristic, 2)
+    player_white_strategy = strategies.RandomStrategy()
+    player_black_strategy = strategies.BestNextStateStrategy(heuristics.adaptive_heatmap_heuristic)
 
     game = Game(player_white_strategy, player_black_strategy)
     run(game, verbous=False)
 
-    print(f"Total nodes visited: {sum(player_black_strategy.nodes_visited)}")
-    print(f"Avg nodes visited: {np.mean(np.array(player_black_strategy.nodes_visited))}")
+    # print(f"Total nodes visited: {sum(player_black_strategy.nodes_visited)}")
+    # print(f"Avg nodes visited: {np.mean(np.array(player_black_strategy.nodes_visited))}")
 
 if __name__ == '__main__':
     main()
