@@ -125,9 +125,10 @@ def adaptive_heatmap_heuristic(board, maximizing_player):
     player_fields = {player : halma.calculate_player_fields(board, player) for player in halma.Halma.players}
     heatmap = HEATMAPS[maximizing_player]
     free_end_zone_fields = {player : list(set(WINNING_COORDINATES[player]) - set(player_fields[player])) for player in halma.Halma.players}
+    manhattan_weight = 100
 
     if len(free_end_zone_fields[maximizing_player]) <= end_zone_threshold:
-        return manhattan_state_heuristic(board, maximizing_player)
+        return manhattan_weight * manhattan_state_heuristic(board, maximizing_player)
     else:
         return sum([heatmap[y][x] for x, y in list(chain.from_iterable(player_fields.values()))])
 
@@ -156,7 +157,7 @@ def main():
     # print(halma.check_winning_condition(board, FieldType.PLAYER_BLACK))
     # print(manhattan_state_heuristic(board, FieldType.PLAYER_BLACK))
 
-    print_heatmap(HEATMAPS[FieldType.PLAYER_BLACK])
+    print_heatmap(HEATMAPS[FieldType.PLAYER_WHITE])
     # print_heatmap(HEATMAPS[FieldType.PLAYER_BLACK])
 
     #print(heatmap_heuristic(board, FieldType.PLAYER_BLACK))
